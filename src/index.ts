@@ -1,13 +1,13 @@
 import express from "express";
 import admin from "firebase-admin";
 import "dotenv/config";
-import { serverPort, serviceAccountKey } from "./constant";
+import { serverPort, serviceAccountId, serviceAccountKey } from "./constant";
 import userRouter from "./routes/user.route";
 
 // Initialize the SDK
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccountKey),
-  serviceAccountId: "firebase-adminsdk-dlbgi@taskify-c40e5.iam.gserviceaccount.com",
+  serviceAccountId: serviceAccountId,
 });
 
 const app = express();
