@@ -1,7 +1,6 @@
-import fetch from "node-fetch";
 import { firebaseApiKey } from "../constant";
 import { FirebaseError } from "firebase-admin";
-import { response } from "express";
+import axios from "axios";
 
 const API_KEY = firebaseApiKey;
 const BaseURL = "https://identitytoolkit.googleapis.com/v1/accounts";
@@ -20,18 +19,15 @@ interface LoginResData {
  */
 export async function loginUser(email: string, password: string) {
   try {
-    const response = await fetch(`${BaseURL}:signInWithPassword?key=${API_KEY}`, {
-      method: "POST",
-      body: JSON.stringify({ email: email, password: password }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const response = await axios.post(`${BaseURL}:signInWithPassword?key=${API_KEY}`, {
+      email: email,
+      password: password,
     });
-    const data = (await response.json()) as LoginResData;
-    return data;
+    console.log("auth service", response.data.error);
+    return response.data;
   } catch (error) {
     const firebaseError = error as FirebaseError;
-    console.log("Failed to login", firebaseError);
+    console.log("Failed to login", firebaseError.message);
     throw firebaseError;
   }
 }
