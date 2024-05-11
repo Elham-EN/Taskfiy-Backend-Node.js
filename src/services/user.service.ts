@@ -26,12 +26,25 @@ export async function createUser(userData: CreateUserData): Promise<string | nul
       // If user exists, throw an exception or handle accordingly
       throw new Error("User already exists with that email");
     }
-    // Creare user record
+    // Create user record for auth
     const userRecord = await admin.auth().createUser({
       displayName: userData.fullname,
       email: userData.email,
       password: userData.password,
     });
+    // Create user profile in Firestore
+    await admin
+      .firestore()
+      .collection("users")
+      .doc(userRecord.uid)
+      .set({
+        uid: userRecord.uid,
+        email: userRecord.email,
+        fullname: userRecord.displayName || "",
+        photoURL: "",
+        bio: "",
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
     console.log("User Successfully Created", userRecord.uid);
     // create custom token and send back to client
     const token = generateToken(userRecord.uid);
